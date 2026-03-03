@@ -135,7 +135,7 @@ def find_longest_sequence_merge(cards):
         max_length = max(max_length, current_length)
 
     return min(max_length, len(cards))
-⏱ Complexity Analysis
+Complexity Analysis
 
 Merge Sort: O(n log n)
 
