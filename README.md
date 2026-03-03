@@ -1,4 +1,4 @@
-# lab1
+# lab2
 Repository for labs
  Laboratory Work: Alternative Poker Variant (Merge Sort Implementation)
  Task Description
