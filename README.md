@@ -1,84 +1,99 @@
-# lab3
-# Repository for labs Laboratory Work: Binary Tree In-Order Traversal
+# lab5
+# Repository for labs Laboratory Work: Number of Islands (DFS Implementation)
 
 ## Task Description
-This laboratory work implements a Binary Tree data structure, constructs it from an array representation read from a file, and performs an in-order traversal to retrieve the elements in a specific order.
+This laboratory work implements an algorithm to find and count the number of distinct islands in a 2D grid using Depth-First Search (DFS).
 
 ## Problem Statement
-* A binary tree must be constructed from an array where the left child of a node at index `i` is at `2*i + 1` and the right child is at `2*i + 2`.
-* The array representation can contain `null`, `n`, or `none` strings to denote empty child nodes.
-* The data is read from an external text file (e.g., `pyramid.txt`), which can have values separated by commas or spaces.
-* The goal is to perform an **in-order traversal** (Left, Root, Right) of the constructed tree and return the sequence of visited nodes.
+* A 2D grid is provided where `1` represents land and `0` represents water.
+* An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically (diagonal connections do not count).
+* The goal is to traverse the grid and determine the total number of isolated islands.
+* The grid is allowed to be modified in place to track visited landmasses.
 
 ## Objective
-Implement the following core functions:
-1.  `build_tree_from_array(arr, i=0)`: Recursively builds the binary tree from a list.
-2.  `build_tree_from_file(filename)`: Parses a file into an array and triggers tree construction.
-3.  `in_order_traversal(root)`: Returns a list of node values visited in in-order.
-
-## Algorithm Overview
-This implementation consists of three main components:
-
-1.  **File Parsing**:
-    * Reads the file content, replaces commas with spaces, and splits the string into a list of tokens.
-    * Converts numeric tokens to integers and recognizes specific string literals (`null`, `none`, `n`) as `None`.
-2.  **Tree Construction**:
-    * Uses a recursive approach to build the tree.
-    * Given an index `i`, the function creates a `BinaryTree` node.
-    * It recursively assigns the left child using index `2 * i + 1` and the right child using `2 * i + 2`.
-3.  **In-Order Traversal**:
-    * Recursively traverses the left subtree.
-    * Visits the current root node (adds its value to the result list).
-    * Recursively traverses the right subtree.
-
-## Full Solution
-
+Implement the function:
 ```python
-from typing import List
+def count_islands(grid: list[list[int]]) -> int:
+def count_islands(grid):
+    if not grid:
+        return 0
 
-class BinaryTree:
-    def __init__(self, value):
-        self.value = value
-        self.left = None
-        self.right = None
+    rows = len(grid)
+    cols = len(grid[0])
+    island_count = 0
 
-def in_order_traversal(root) -> List:
-    if root is None:
-        return []
-    return in_order_traversal(root.left) + [root.value] + in_order_traversal(root.right)
+    def dfs(r, c):
+        if r < 0 or c < 0 or r >= rows or c >= cols or grid[r][c] == 0:
+            return
+        
+        grid[r][c] = 0  # Mark as visited
+        
+        dfs(r - 1, c)   # Up
+        dfs(r + 1, c)   # Down
+        dfs(r, c - 1)   # Left
+        dfs(r, c + 1)   # Right
 
-def build_tree_from_array(arr, i=0):
-    if i < len(arr) and arr[i] is not None:
-        root = BinaryTree(arr[i])
-        root.left = build_tree_from_array(arr, 2 * i + 1)
-        root.right = build_tree_from_array(arr, 2 * i + 2)
-        return root
-    return None
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 1:
+                island_count += 1
+                dfs(r, c)
 
-def build_tree_from_file(filename):
-    try:
-        with open(filename, 'r') as file:
-            content = file.read().replace(',', ' ').split()
-            
-            arr = []
-            for item in content:
-                if item.lower() in ['null', 'n', 'none']:
-                    arr.append(None)
-                else:
-                    arr.append(int(item))
-                    
-            return build_tree_from_array(arr)
-            
-    except FileNotFoundError:
-        print(f"Помилка: Файл '{filename}' не знайдено.")
-        return None
+    return island_count
 
 if __name__ == "__main__":
-    filename = "pyramid.txt" 
-    
-    print(f"Будуємо дерево з файлу {filename}...")
-    root = build_tree_from_file(filename)
-    
-    if root:
-        result = in_order_traversal(root)
-        print("In-order обхід дерева:", result)
+    grid = [
+        [1, 1, 0, 0, 0],
+        [1, 1, 0, 0, 1],
+        [0, 0, 0, 1, 1],
+        [0, 0, 0, 0, 0]
+    ]
+    print(f"Кількість островів: {count_islands(grid)}")
+    Complexity AnalysisTime Complexity: O(M $\times$ N), where M is the number of rows and N is the number of columns. Every cell in the grid is visited and processed exactly once.Space Complexity: O(M $\times$ N) in the worst-case scenario (if the entire grid is a single island), due to the recursion stack of the DFS approach.ExamplesExample 1Input:Pythongrid = [
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 1],
+    [0, 0, 0, 1, 1],
+    [0, 0, 0, 0, 0]
+]
+Output:PlaintextКількість островів: 2
+Example 2 (Empty Grid)Input:Pythongrid = []
+Output:PlaintextКількість островів: 0
+Example 3 (All Water)Input:Pythongrid = [
+    [0, 0, 0],
+    [0, 0, 0]
+]
+Output:PlaintextКількість островів: 0
+Unit TestingTesting is implemented using Python’s unittest module.Pythonimport unittest
+from solution import count_islands
+
+class TestCountIslands(unittest.TestCase):
+    def test_example_1(self):
+        grid = [
+            [1, 1, 0, 0, 0],
+            [1, 1, 0, 0, 1],
+            [0, 0, 0, 1, 1],
+            [0, 0, 0, 0, 0]
+        ]
+        self.assertEqual(count_islands(grid), 2)
+
+    def test_empty_grid(self):
+        self.assertEqual(count_islands([]), 0)
+
+    def test_all_water(self):
+        grid = [[0, 0], [0, 0]]
+        self.assertEqual(count_islands(grid), 0)
+
+    def test_all_land(self):
+        grid = [[1, 1], [1, 1]]
+        self.assertEqual(count_islands(grid), 1)
+
+    def test_diagonal_islands(self):
+        grid = [
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ]
+        self.assertEqual(count_islands(grid), 3)
+
+if __name__ == "__main__":
+    unittest.main()
